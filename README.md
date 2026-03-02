@@ -67,3 +67,4 @@ O sistema foca na transição de estados das conversas. Um usuário só pode ter
 * `GET /chat/:chatId` - Retorna o histórico de mensagens de um chat.
 * `GET /my-chats` - Lista todos os chats do usuário logado.
 * `POST /chat/:chatId/end` - Encerra a conexão.
+
