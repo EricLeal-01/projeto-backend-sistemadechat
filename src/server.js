@@ -6,7 +6,7 @@ const cors = require('cors');
 
 const app = express();
 const prisma = new PrismaClient();
-const SECRET_KEY = "segredo-super-secreto-mude-isso"; // Em produção, use variável de ambiente .env
+const SECRET_KEY = "segredo-super-secreto-mude-isso";
 
 app.use(express.json());
 app.use(cors());
@@ -30,7 +30,7 @@ const authenticate = (req, res, next) => {
 
 // --- ROTAS DE USUÁRIO ---
 
-// 1. Cadastro [cite: 15]
+// 1. Cadastro 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     
@@ -61,9 +61,9 @@ app.post('/login', async (req, res) => {
     res.json({ token, userId: user.id });
 });
 
-// --- ROTAS DE CHAT (A Lógica Principal) ---
+// - ROTAS DE CHAT (A Lógica Principal) -
 
-// 3. Iniciar solicitação de chat (A "Discagem") [cite: 8]
+// 3. Iniciar solicitação de chat (A "Discagem") 
 app.post('/chat/request', authenticate, async (req, res) => {
     const { targetUsername } = req.body;
     const initiatorId = req.userId;
@@ -90,7 +90,7 @@ app.post('/chat/request', authenticate, async (req, res) => {
         return res.status(400).json({ error: "Você ou o destinatário já estão em uma conversa ou solicitação pendente." });
     }
 
-    // Cria a solicitação PENDING [cite: 26]
+    // Cria a solicitação PENDING 
     const chat = await prisma.chat.create({
         data: {
             initiatorId,
@@ -102,7 +102,7 @@ app.post('/chat/request', authenticate, async (req, res) => {
     res.json({ message: "Solicitação enviada. Aguardando aceite.", chatId: chat.id });
 });
 
-// 4. Aceitar ou Recusar chat [cite: 17]
+// 4. Aceitar ou Recusar chat
 app.post('/chat/:chatId/respond', authenticate, async (req, res) => {
     const { chatId } = req.params;
     const { action } = req.body; // "ACCEPT" ou "REJECT"
@@ -120,7 +120,7 @@ app.post('/chat/:chatId/respond', authenticate, async (req, res) => {
     }
 
     if (action === "ACCEPT") {
-        // Vira uma "chamada ativa" [cite: 9]
+        // Vira uma "chamada ativa"
         await prisma.chat.update({
             where: { id: Number(chatId) },
             data: { status: "ACTIVE" }
@@ -136,7 +136,7 @@ app.post('/chat/:chatId/respond', authenticate, async (req, res) => {
     }
 });
 
-// 5. Enviar Mensagem [cite: 19]
+// 5. Enviar Mensagem 
 app.post('/chat/:chatId/message', authenticate, async (req, res) => {
     const { chatId } = req.params;
     const { content } = req.body;
@@ -149,7 +149,7 @@ app.post('/chat/:chatId/message', authenticate, async (req, res) => {
         return res.status(403).json({ error: "Acesso negado." });
     }
 
-    // REGRA: Só pode falar se estiver ACTIVE [cite: 9]
+    // REGRA: Só pode falar se estiver ACTIVE 
     if (chat.status !== "ACTIVE") {
         return res.status(400).json({ error: "O chat não está ativo." });
     }
@@ -165,7 +165,7 @@ app.post('/chat/:chatId/message', authenticate, async (req, res) => {
     res.json(message);
 });
 
-// 6. Listar Mensagens e Histórico [cite: 29]
+// 6. Listar Mensagens e Histórico 
 app.get('/chat/:chatId', authenticate, async (req, res) => {
     const { chatId } = req.params;
     const userId = req.userId;
@@ -182,7 +182,7 @@ app.get('/chat/:chatId', authenticate, async (req, res) => {
     res.json(chat);
 });
 
-// 7. Listar todos os chats do usuário (Histórico geral) [cite: 29]
+// 7. Listar todos os chats do usuário (Histórico geral) 
 app.get('/my-chats', authenticate, async (req, res) => {
     const userId = req.userId;
     const chats = await prisma.chat.findMany({
@@ -194,7 +194,7 @@ app.get('/my-chats', authenticate, async (req, res) => {
     res.json(chats);
 });
 
-// 8. Encerrar Chat [cite: 20]
+// 8. Encerrar Chat
 app.post('/chat/:chatId/end', authenticate, async (req, res) => {
     const { chatId } = req.params;
     const userId = req.userId;
@@ -205,14 +205,11 @@ app.post('/chat/:chatId/end', authenticate, async (req, res) => {
         return res.status(403).json({ error: "Acesso negado." });
     }
 
-    // Qualquer parte pode encerrar [cite: 21]
+    // Qualquer parte pode encerrar
     await prisma.chat.update({
         where: { id: Number(chatId) },
         data: { status: "CLOSED" }
     });
-
-    // AQUI SERIA ONDE A IA ENTRARIA PARA GERAR O RELATÓRIO [cite: 47]
-    // Como é bônus, deixamos comentado.
 
     res.json({ message: "Chat encerrado com sucesso." });
 });
