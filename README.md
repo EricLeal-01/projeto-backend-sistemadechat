@@ -1,6 +1,6 @@
 #  API - Sistema de Chat (Processo Seletivo LOADING JR)
 
-Este é um projeto de Back-end desenvolvido para o processo seletivo da Empresa Júnior Loading. O objetivo é uma API de mensageria instantânea cuja regra de negócio é inspirada na dinâmica de uma chamada telefônica tradicional: exige consentimento mútuo para abrir o canal e o status dita as regras da conversa.
+Este é um projeto de Back-end desenvolvido para o processo seletivo da Empresa Júnior Loading. O objetivo é uma API de mensagem instantânea cuja regra de negócio é inspirada na dinâmica de uma chamada telefônica tradicional: exige consentimento mútuo para abrir o canal e o status dita as regras da conversa.
 
 ## Seguintes Tecnologias Utilizadas
 
@@ -67,6 +67,7 @@ O sistema foca na transição de estados das conversas. Um usuário só pode ter
 * `GET /chat/:chatId` - Retorna o histórico de mensagens de um chat.
 * `GET /my-chats` - Lista todos os chats do usuário logado.
 * `POST /chat/:chatId/end` - Encerra a conexão.
+
 
 
 
